@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { GeometryExtractor } from "./parser.js";
 import { RayTracer } from "./raytracer.js";
 import { getMaterial } from "./materials.js";
@@ -35,9 +35,11 @@ function initScene() {
   resizeRenderer();
 
   camera = new THREE.PerspectiveCamera(50, renderer.domElement.width / renderer.domElement.height, 0.1, 100000);
-  controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.08;
+  controls = new TrackballControls(camera, renderer.domElement);
+  controls.rotateSpeed = 2.0;
+  controls.zoomSpeed = 1.2;
+  controls.panSpeed = 0.8;
+  controls.dynamicDampingFactor = 0.15;
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
   const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -48,6 +50,7 @@ function initScene() {
     resizeRenderer();
     camera.aspect = renderer.domElement.width / renderer.domElement.height;
     camera.updateProjectionMatrix();
+    controls.handleResize();
   });
 
   animate();
@@ -191,6 +194,7 @@ function setupCamera(volumes, sources) {
   camera.position.set(camDist * 0.7, -camDist * 0.5, zMid - zSpan * 0.15);
   controls.target.set(0, 0, zMid);
   camera.up.set(0, 0, 1);
+  camera.lookAt(0, 0, zMid);
   controls.update();
 }
 
